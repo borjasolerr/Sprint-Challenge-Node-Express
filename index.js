@@ -125,4 +125,41 @@ server.delete('/api/actions/:id', async (req, res) => {
   }
 });
 
+// UPDATE PROJECTS AND ACTIONS BY ID
+server.put('/api/projects/:id', async (req, res) => {
+  let { id } = req.params;
+  let changes = req.body;
+
+  try {
+    const project = await projectDB.get(id);
+
+    if (project) {
+      await projectDB.update(id, changes);
+      res.status(200).json(project);
+    } else {
+      res.status(400).json({ message: 'Could not find project' });
+    }
+  } catch (err) {
+    res.status(500).json({ error: 'Unable to update the project' });
+  }
+});
+
+server.put('/api/actions/:id', async (req, res) => {
+  let { id } = req.params;
+  let { notes, description, completed } = req.body;
+
+  try {
+    const action = await actionsDB.get(id);
+
+    if (action) {
+      await actionsDB.update(id, { notes, description, completed });
+      res.status(200).json(action);
+    } else {
+      res.status(400).json({ message: 'Could not find the action' });
+    }
+  } catch (err) {
+    res.status(500).json({ error: 'Unable to update the action' });
+  }
+});
+
 server.listen(4000);
