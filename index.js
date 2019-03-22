@@ -62,4 +62,67 @@ server.get('/api/actions/:id', (req, res) => {
   }
 });
 
+// POST AN ACTION AND PRJECT
+server.post('/api/projects', async (req, res) => {
+  let { name, description } = req.body;
+
+  try {
+    const newProject = projectDB.insert({ name, description });
+
+    if (name === undefined || description === undefined) {
+      res.status(400).json({ error: 'Please provide a name and description' });
+    } else {
+      res.status(201).json(newProject);
+    }
+  } catch (err) {
+    res.status(500).json({ error: 'Unable to post new project' });
+  }
+});
+
+server.post('/api/actions', async (req, res) => {
+  let { notes, description } = req.body;
+
+  try {
+    const newAction = actionsDB.insert({ notes, description });
+    res.status(201).json(newAction);
+  } catch (err) {
+    res.status(500).json({ error: 'Unable to post new action' });
+  }
+});
+
+// DELETE PROJECTs AND ACTIONS
+server.delete('/api/projects/:id', async (req, res) => {
+  let { id } = req.params;
+
+  try {
+    const project = await projectDB.get(id);
+
+    if (project) {
+      await projectDB.remove(id);
+      res.status(200).json(project);
+    } else {
+      res.status(400).json({ message: 'Could not find the project' });
+    }
+  } catch (err) {
+    res.status(500).json({ error: 'Unable to remove project' });
+  }
+});
+
+server.delete('/api/actions/:id', async (req, res) => {
+  let { id } = req.params;
+
+  try {
+    const action = await actionsDB.get(id);
+
+    if (action) {
+      await actionsDB.remove(id);
+      res.status(200).json(action);
+    } else {
+      res.status(400).json({ message: 'Could not find action' });
+    }
+  } catch {
+    res.status(500).json({ error: 'Unable to remove action' });
+  }
+});
+
 server.listen(4000);
