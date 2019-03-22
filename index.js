@@ -124,7 +124,7 @@ server.delete('/api/actions/:id', async (req, res) => {
     } else {
       res.status(400).json({ message: 'Could not find action' });
     }
-  } catch {
+  } catch (err) {
     res.status(500).json({ error: 'Unable to remove action' });
   }
 });
